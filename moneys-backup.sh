@@ -1,8 +1,8 @@
-#!/bin/bash
+#/bin/bash
 
 backup_dir="moneys_backup"
-origin_dir="/home/renatus/Desktop"
-stable_file_name="moneys.stable.xhb"
+origin_file="/home/renatus/Desktop/moneys.origin.xhb"
+stable_filename="moneys.stable.xhb"
 
 function log(){
     echo "[NOTICE]:$(date +%F_%T) $1"
@@ -38,15 +38,15 @@ function check_stable_version_exists(){
     
     log "Checking stable version of moneys file on storage:$storage"
 
-    if [[ ! -f "/mnt/$storage/$backup_dir/$stable_file_name" ]] ; then
-        warning "Stable version does not found on storage:$storage. Copying from Desktop..."
-        cp "$origin_dir/$stable_file_name" "/mnt/$storage/$backup_dir/"
+    if [[ ! -f "/mnt/$storage/$backup_dir/$stable_filename" ]] ; then
+        warning "Stable version does not found on storage:$storage. Copying from $origin_file"
+        cp "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename"
     else
         # Checking if stable file on storage differ and older than stable file in origin dir 
-        if ! cmp -s "$origin_dir/$stable_file_name" "/mnt/$storage/$backup_dir/$stable_file_name" ; then
-            warning "Stable file on storage:$storage and in $origin_dir are differs, copying from origin:$origin_dir"
-            rm "/mnt/$storage/$backup_dir/$stable_file_name"
-            cp "$origin_dir/$stable_file_name" "/mnt/$storage/$backup_dir/"
+        if ! cmp -s "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename" ; then
+            warning "Stable file on storage:$storage and origin file $origin_file are differs, copying $origin_file to stable"
+            rm "/mnt/$storage/$backup_dir/$stable_filename"
+            cp "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename"
             
             year="$(date +%Y)"
             month="$(date +%m)"
@@ -56,7 +56,7 @@ function check_stable_version_exists(){
 
             log "Saving in history stable file with timestamp"
             mkdir -p $save_dir
-            cp "$origin_dir/$stable_file_name" $save_dir/moneys.$(date +%F_%T).xhb -v
+            cp "$origin_file" $save_dir/moneys.$(date +%F_%T).xhb -v
         else
             log "Stable version found on storage:$storage"
         fi
