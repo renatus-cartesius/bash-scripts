@@ -18,16 +18,16 @@ function error(){
 function check_backup_dir_exist(){
     local storage=$1 
 
-    if [ -d "/mnt/$storage/$backup_dir" ]; then
+    if [ -d "$storage/$backup_dir" ]; then
         log "Found $storage storage"
     else
-        if [ ! -d "/mnt/$storage" -o -z $storage ] ; then
-            error "Uncorrect storage - /mnt/$storage"
+        if [ ! -d "$storage" -o -z $storage ] ; then
+            error "Uncorrect storage - $storage"
             failed_storage=$storage
             storages=(${storages[@]/$failed_storage})
         else
             warning "Storage $storage found, but backup dir not, creating..."
-            mkdir -p "/mnt/$storage/$backup_dir"
+            mkdir -p "$storage/$backup_dir"
         fi
     fi
 }
@@ -38,21 +38,21 @@ function check_stable_version_exists(){
     
     log "Checking stable version of moneys file on storage:$storage"
 
-    if [[ ! -f "/mnt/$storage/$backup_dir/$stable_filename" ]] ; then
+    if [[ ! -f "$storage/$backup_dir/$stable_filename" ]] ; then
         warning "Stable version does not found on storage:$storage. Copying from $origin_file"
-        cp "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename"
+        cp "$origin_file" "$storage/$backup_dir/$stable_filename"
     else
         # Checking if stable file on storage differ and older than stable file in origin dir 
-        if ! cmp -s "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename" ; then
+        if ! cmp -s "$origin_file" "$storage/$backup_dir/$stable_filename" ; then
             warning "Stable file on storage:$storage and origin file $origin_file are differs, copying $origin_file to stable"
-            rm "/mnt/$storage/$backup_dir/$stable_filename"
-            cp "$origin_file" "/mnt/$storage/$backup_dir/$stable_filename"
+            rm "$storage/$backup_dir/$stable_filename"
+            cp "$origin_file" "$storage/$backup_dir/$stable_filename"
             
             year="$(date +%Y)"
             month="$(date +%m)"
             day="$(date +%d)"
 
-            save_dir="/mnt/$storage/$backup_dir/$year/$month/$day"
+            save_dir="$storage/$backup_dir/$year/$month/$day"
 
             log "Saving in history stable file with timestamp"
             mkdir -p $save_dir
